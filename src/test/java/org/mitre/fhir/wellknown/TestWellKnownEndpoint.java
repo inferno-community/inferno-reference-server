@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mitre.fhir.utils.RsaUtils;
 import org.mitre.fhir.utils.exception.RsaKeyException;
-import org.mitre.fhir.wellknown.WellKnownAuthorizationEndpointController;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.IOException;

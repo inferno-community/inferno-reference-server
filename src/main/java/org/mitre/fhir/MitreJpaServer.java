@@ -2,13 +2,14 @@ package org.mitre.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.api.rp.ResourceProviderFactory;
 import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.subscription.SubscriptionInterceptorLoader;
-import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
+import ca.uhn.fhir.jpa.searchparam.registry.SearchParamRegistryImpl;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
@@ -27,6 +28,9 @@ import org.springframework.context.ApplicationContext;
  */
 public class MitreJpaServer extends RestfulServer {
   private static final long serialVersionUID = 1L;
+  
+  ISearchParamRegistry searchParamRegistry = new SearchParamRegistryImpl();
+  
 
   @Override
   protected void initialize() throws ServletException {
@@ -60,10 +64,11 @@ public class MitreJpaServer extends RestfulServer {
     @SuppressWarnings("unchecked")
     IFhirSystemDao<Bundle, Meta> systemDao = appContext.getBean("mySystemDaoR4",
         IFhirSystemDao.class);
+    
     ServerConformanceWithAuthorizationProvider confProvider =
         new ServerConformanceWithAuthorizationProvider(this,
             systemDao,
-            appContext.getBean(DaoConfig.class));
+            appContext.getBean(DaoConfig.class), searchParamRegistry);
     confProvider.setImplementationDescription("HAPI FHIR R4 Server");
     setServerConformanceProvider(confProvider);
 
@@ -79,11 +84,6 @@ public class MitreJpaServer extends RestfulServer {
     // This may mean a performance hit when performing searches that return lots of results,
     // but makes the server much more scalable.
     setPagingProvider(appContext.getBean(DatabaseBackedPagingProvider.class));
-
-    // Register interceptors for the server based on DaoConfig.getSupportedSubscriptionTypes()
-    SubscriptionInterceptorLoader subscriptionInterceptorLoader = appContext
-        .getBean(SubscriptionInterceptorLoader.class);
-    subscriptionInterceptorLoader.registerInterceptors();
 
     // If you are using DSTU3+, you may want to add a terminology uploader.
     // This allows uploading of external terminologies such as Snomed CT.

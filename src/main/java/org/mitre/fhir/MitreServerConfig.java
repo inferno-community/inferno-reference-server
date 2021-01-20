@@ -1,8 +1,11 @@
 package org.mitre.fhir;
 
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
-import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.dao.DaoSearchParamProvider;
+import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamProvider;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import java.sql.Driver;
 import java.util.Properties;
@@ -150,5 +153,23 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
     JpaTransactionManager manager = new JpaTransactionManager();
     manager.setEntityManagerFactory(entityManagerFactory);
     return manager;
+  }
+  
+  //Beans that are autowired in other places
+  @Bean
+  public PartitionSettings partitionSettings() {
+    PartitionSettings retVal = new PartitionSettings();
+
+    // Partitioning
+    //if (appProperties.getPartitioning() != null) {
+    //  retVal.setPartitioningEnabled(true);
+    //}
+
+    return retVal;
+  }
+  
+  @Bean
+  public ISearchParamProvider mySearchParamProvider() {
+    return new DaoSearchParamProvider();
   }
 }

@@ -1,8 +1,9 @@
 package org.mitre.fhir.authorization;
 
-import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import java.util.List;
@@ -37,11 +38,10 @@ public class ServerConformanceWithAuthorizationProvider extends JpaConformancePr
   private static final String NEAR_SEARCH_PARAM_NAME = "near";
 
   private static final String SEARCH_REV_INCLUDE = "Provenance:target";
-
-
+   
   public ServerConformanceWithAuthorizationProvider(RestfulServer theRestfulServer,
-      IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig) {
-    super(theRestfulServer, theSystemDao, theDaoConfig);
+      IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry searchParamRegistry) {
+    super(theRestfulServer, theSystemDao, theDaoConfig, searchParamRegistry);
   }
 
   public static String getTokenExtensionUri(HttpServletRequest theRequest) {
