@@ -6,6 +6,8 @@ import ca.uhn.fhir.jpa.dao.DaoSearchParamProvider;
 import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamProvider;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
+import ca.uhn.fhir.jpa.searchparam.registry.SearchParamRegistryImpl;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import java.sql.Driver;
 import java.util.Properties;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Configures the Server and Database.
+ * 
  * @author Tim Shaffer
  */
 @Configuration
@@ -28,6 +31,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
 
   /**
    * Returns the Data Access Object (DAO) configuration.
+   * 
    * @return the DAO configuration.
    */
   @Bean
@@ -40,6 +44,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
 
   /**
    * Returns the model configuration.
+   * 
    * @return the model configuration
    */
   @Bean
@@ -49,6 +54,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
 
   /**
    * Returns the data source for the server.
+   * 
    * @return the data source
    */
   @Bean
@@ -57,7 +63,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
     BasicDataSource dataSource = new BasicDataSource();
 
     try {
-      //org.apache.derby.jdbc.EmbeddedDriver
+      // org.apache.derby.jdbc.EmbeddedDriver
       HapiReferenceServerProperties hapiReferenceServerProperties =
           new HapiReferenceServerProperties();
 
@@ -90,6 +96,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
 
   /**
    * Returns the LocalContainerEntityMangerFactoryBean.
+   * 
    * @return the LocalContainerEntityMangerFactoryBean
    */
   @Override
@@ -145,6 +152,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
 
   /**
    * Returns the JpaTransactionManager.
+   * 
    * @param entityManagerFactory the JpaTransactionManager
    * @return the JpaTransactionManager
    */
@@ -154,22 +162,22 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
     manager.setEntityManagerFactory(entityManagerFactory);
     return manager;
   }
-  
-  //Beans that are autowired in other places
+
+  // Beans that are autowired in other places
   @Bean
   public PartitionSettings partitionSettings() {
     PartitionSettings retVal = new PartitionSettings();
-
-    // Partitioning
-    //if (appProperties.getPartitioning() != null) {
-    //  retVal.setPartitioningEnabled(true);
-    //}
-
     return retVal;
   }
-  
+
   @Bean
   public ISearchParamProvider mySearchParamProvider() {
     return new DaoSearchParamProvider();
+  }
+
+  // Required for MitreJpaServer
+  @Bean
+  public ISearchParamRegistry searchParamRegistry() {
+    return new SearchParamRegistryImpl();
   }
 }
