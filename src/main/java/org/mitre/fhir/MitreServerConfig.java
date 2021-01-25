@@ -1,6 +1,7 @@
 package org.mitre.fhir;
 
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.batch.config.NonPersistedBatchConfigurer;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.dao.DaoSearchParamProvider;
 import ca.uhn.fhir.jpa.model.config.PartitionSettings;
@@ -14,8 +15,10 @@ import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -150,24 +153,25 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
     return new ResponseHighlighterInterceptor();
   }
 
-  /**
-   * Returns the JpaTransactionManager.
-   * 
-   * @param entityManagerFactory the JpaTransactionManager
-   * @return the JpaTransactionManager
-   */
-  @Bean
-  public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-    JpaTransactionManager manager = new JpaTransactionManager();
-    manager.setEntityManagerFactory(entityManagerFactory);
-    return manager;
-  }
-
   // Beans that are autowired in other places
   @Bean
   public PartitionSettings partitionSettings() {
     PartitionSettings retVal = new PartitionSettings();
     return retVal;
+  }
+  
+  @Bean
+  public BatchConfigurer batchConfigurer() {
+      return new NonPersistedBatchConfigurer();
+  }
+  
+
+  @Primary
+  @Bean
+  public JpaTransactionManager hapiTransactionManager(EntityManagerFactory entityManagerFactory) {
+      JpaTransactionManager retVal = new JpaTransactionManager();
+      retVal.setEntityManagerFactory(entityManagerFactory);
+      return retVal;
   }
 
   @Bean
