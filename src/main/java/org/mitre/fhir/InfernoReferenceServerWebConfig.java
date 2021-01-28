@@ -19,7 +19,7 @@ public class InfernoReferenceServerWebConfig implements WebMvcConfigurer {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry theRegistry) {
-    WebUtil.webJarAddBoostrap3(theRegistry);
+    WebUtil.webJarAddBoostrap(theRegistry);
     WebUtil.webJarAddJQuery(theRegistry);
     WebUtil.webJarAddFontAwesome(theRegistry);
     WebUtil.webJarAddJSTZ(theRegistry);
