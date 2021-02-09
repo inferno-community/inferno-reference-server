@@ -778,6 +778,17 @@ public class TestAuthorization {
 
     Assert.assertEquals("SAMPLE_ACCESS_TOKEN", accessToken);
   }
+  
+  @Test
+  public void myTest()
+  {
+    Token token = TokenManager.getInstance().getServerToken();
+
+    Bundle bundle = ourClient.search().forResource("Patient").returnBundle(Bundle.class).count(1000)
+        .withAdditionalHeader(FhirReferenceServerUtils.AUTHORIZATION_HEADER_NAME,
+            FhirReferenceServerUtils.createAuthorizationHeaderValue(token.getTokenValue()))
+        .execute();
+  }
 
   @Test
   public void testGetAllPatientsBundle() {
