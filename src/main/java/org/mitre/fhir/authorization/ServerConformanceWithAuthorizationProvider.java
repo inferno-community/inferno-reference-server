@@ -3,11 +3,11 @@ package org.mitre.fhir.authorization;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
+import ca.uhn.fhir.jpa.provider.JpaCapabilityStatementProvider;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +16,7 @@ import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.Meta;
 import org.mitre.fhir.utils.FhirReferenceServerUtils;
 
-public class ServerConformanceWithAuthorizationProvider extends JpaConformanceProviderR4 {
+public class ServerConformanceWithAuthorizationProvider extends JpaCapabilityStatementProvider {
 
   public static final String TOKEN_EXTENSION_URL = "token";
   public static final String AUTHORIZE_EXTENSION_URL = "authorize";
@@ -32,7 +32,7 @@ public class ServerConformanceWithAuthorizationProvider extends JpaConformancePr
   public ServerConformanceWithAuthorizationProvider(RestfulServer theRestfulServer,
       IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig,
       ISearchParamRegistry searchParamRegistry) {
-    super(theRestfulServer, theSystemDao, theDaoConfig, searchParamRegistry);
+    super(theRestfulServer, theSystemDao, theDaoConfig, searchParamRegistry, null);
   }
 
   public static String getTokenExtensionUri(HttpServletRequest theRequest) {

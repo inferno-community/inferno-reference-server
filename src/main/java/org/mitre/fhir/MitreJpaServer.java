@@ -7,12 +7,12 @@ import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
+import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 import javax.servlet.ServletException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Meta;
@@ -78,6 +78,8 @@ public class MitreJpaServer extends RestfulServer {
             appContext.getBean(DaoConfig.class), searchParamRegistry);
     confProvider.setImplementationDescription("HAPI FHIR R4 Server");
     setServerConformanceProvider(confProvider);
+    
+    
 
     // Enable e-tag support.
     setETagSupport(ETagSupportEnum.ENABLED);
@@ -109,5 +111,7 @@ public class MitreJpaServer extends RestfulServer {
     registerInterceptor(loggingInterceptor);
 
     registerInterceptor(new FakeOauth2AuthorizationInterceptorAdaptor());
+    
+    
   }
 }

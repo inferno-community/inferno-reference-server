@@ -84,4 +84,5 @@ public class FakeOauth2AuthorizationInterceptorAdaptor extends InterceptorAdapte
 
     return true;
   }
+  
 }

@@ -8,9 +8,9 @@ import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.jpa.search.HapiLuceneAnalysisConfigurer;
 import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamProvider;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.jpa.searchparam.registry.SearchParamRegistryImpl;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 import java.sql.Driver;
 import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
@@ -139,7 +139,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
         "local-heap");
     extraProperties.put(BackendSettings.backendKey(LuceneBackendSettings.LUCENE_VERSION),
         "LUCENE_CURRENT");
-    extraProperties.put(HibernateOrmMapperSettings.ENABLED, "true");
+    extraProperties.put(HibernateOrmMapperSettings.ENABLED, "true");    
 
     return extraProperties;
   }
