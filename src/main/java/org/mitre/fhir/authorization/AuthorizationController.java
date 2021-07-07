@@ -6,9 +6,11 @@ import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.dnault.xmlpatch.internal.Log;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Calendar;
@@ -26,6 +28,7 @@ import org.mitre.fhir.authorization.exception.BearerTokenException;
 import org.mitre.fhir.authorization.exception.InvalidBearerTokenException;
 import org.mitre.fhir.authorization.exception.InvalidClientIdException;
 import org.mitre.fhir.authorization.exception.InvalidClientSecretException;
+import org.mitre.fhir.authorization.exception.InvalidScopesException;
 import org.mitre.fhir.authorization.exception.OpenIdTokenGenerationException;
 import org.mitre.fhir.authorization.token.Token;
 import org.mitre.fhir.authorization.token.TokenManager;
@@ -48,6 +51,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class AuthorizationController {
+
+  private static final String BULK_EXPECTED_GRANT_TYPE = "client_credentials";
+  private static final String BULK_EXPECTED_CLIENT_ASSERTION_TYPE =
+      "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
 
   @PostConstruct
   protected void postConstruct() {
@@ -73,6 +80,118 @@ public class AuthorizationController {
     String json = fhirContext.newJsonParser().encodeResourceToString(patientsBundle);
 
     return json;
+  }
+
+  // http://hl7.org/fhir/uv/bulkdata/authorization/index.html#obtaining-an-access-token
+  /**
+   * Get service to validate the client id.
+   * 
+   * @param scopeString client id to be validated
+   * @param grantType the web service request
+   * @param clientAssertionType the client assertion_type
+   * @param clientAssertion the client assertion
+   * @return auth token
+   */
+  @PostMapping(path = "/bulk-token", produces = {"application/json"})
+  public ResponseEntity<String> getTokenByBackendServiceAuthorization(
+      @RequestParam(name = "scope", required = true) String scopeString,
+      @RequestParam(name = "grant_type", required = true) String grantType,
+      @RequestParam(name = "client_assertion_type", required = true) String clientAssertionType,
+      @RequestParam(name = "client_assertion", required = true) String clientAssertion,
+      HttpServletRequest request) throws BearerTokenException {
+
+
+    // decode clientAssertion
+    String[] chunks = clientAssertion.split("\\.");
+    Base64.Decoder decoder = Base64.getDecoder();
+    String headerString = new String(decoder.decode(chunks[0]));
+    String payloadString = new String(decoder.decode(chunks[1]));
+
+    JSONObject header = new JSONObject(headerString);
+    JSONObject payload = new JSONObject(payloadString);
+
+    //validate scopes
+    validateBulkDataScopes(scopeString);
+
+    // check grant_type
+    if (!BULK_EXPECTED_GRANT_TYPE.equals(grantType)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Grant Type should be " + BULK_EXPECTED_GRANT_TYPE);
+    }
+
+    //check client_assertion_type
+    if (!BULK_EXPECTED_CLIENT_ASSERTION_TYPE.equals(clientAssertionType)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Client Assertion Type should be " + BULK_EXPECTED_CLIENT_ASSERTION_TYPE);
+    }
+    
+    //validate client_assertion (jwt)
+    DecodedJWT decodedJWT = JWT.decode(clientAssertion);
+
+    String clientId = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InJlZ2lzdHJhdGlvbi10b2tlbiJ9.eyJqd2tzX3VybCI6Imh0dHA6Ly8xMC4xNS4yNTIuNzMvaW5mZXJuby8ud2VsbC1rbm93bi9qd2tzLmpzb24iLCJhY2Nlc3NUb2tlbnNFeHBpcmVJbiI6MTUsImlhdCI6MTU5NzQxMzE5NX0.q4v4Msc74kN506KTZ0q_minyapJw0gwlT6M_uiL73S4";
+    if (!clientId.equals(decodedJWT.getIssuer()))
+    {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Issuer should be " + BULK_EXPECTED_CLIENT_ASSERTION_TYPE);
+ 
+    }
+
+    TokenManager tokenManager = TokenManager.getInstance();
+    Token token = tokenManager.createToken(scopeString);
+    int expiresIn = 300;
+
+    JSONObject accessToken = new JSONObject();
+    accessToken.put("token_type", "bearer");
+    accessToken.put("scope", scopeString);
+    accessToken.put("expires_in", expiresIn);
+    accessToken.put("access_token", token.getTokenValue());
+
+    HttpHeaders headers = new HttpHeaders();
+    // headers.setCacheControl(CacheControl.noStore());
+    // headers.setPragma("no-cache");
+
+
+    ResponseEntity<String> responseEntity =
+        new ResponseEntity<String>(accessToken.toString(), headers, HttpStatus.OK);
+
+    return responseEntity;
+
+  }
+
+  private void validateBulkDataScopes(String scopesString) {
+    List<String> scopes = FhirReferenceServerUtils.getScopesListByScopeString(scopesString);
+
+    List<String> invalidScopes = new ArrayList<String>();
+
+    for (String scope : scopes) {
+      // confirm scope is system level and a valid scope
+      if (!scope.startsWith("system/")) {
+        invalidScopes.add(scope);
+      } else {
+        String[] scopeParts = scope.split("\\.");
+        String scopeAction = scopeParts[1];
+
+        List<String> actions = List.of("read", "write", "*");
+
+        if (!actions.contains(scopeAction)) {
+          invalidScopes.add(scope);
+        }
+      }
+    }
+
+    if (!invalidScopes.isEmpty()) {
+      String invalidScopesString = "";
+      for (String invalidScope : invalidScopes) {
+        invalidScopesString += invalidScope + ", ";
+      }
+
+      // strip of last 2 characters
+      invalidScopesString = invalidScopesString.substring(0, invalidScopesString.length() - 1);
+
+      String message = "The following scopes are invalid for bulk data : " + invalidScopesString;
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message,
+          new InvalidScopesException(message));
+    }
   }
 
   /**

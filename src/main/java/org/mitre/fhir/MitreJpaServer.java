@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.bulk.export.provider.BulkDataExportProvider;
 import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
@@ -33,6 +34,9 @@ public class MitreJpaServer extends RestfulServer {
 
   @Autowired
   protected ISearchParamRegistry searchParamRegistry;
+  
+  @Autowired
+  BulkDataExportProvider bulkDataExportProvider;
 
 
   public MitreJpaServer() {
@@ -111,6 +115,10 @@ public class MitreJpaServer extends RestfulServer {
     registerInterceptor(loggingInterceptor);
 
     registerInterceptor(new FakeOauth2AuthorizationInterceptorAdaptor());
+    
+    //enable Bulk Export
+    registerProvider(bulkDataExportProvider);
+
     
     
   }
