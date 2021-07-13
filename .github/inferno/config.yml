@@ -1,0 +1,164 @@
+# Base path of application. Inferno will serve pages at HOST/base_path
+# There are a few exceptions, such as "/" and "/landing".
+base_path: "inferno"
+
+# Useful during development to purge the database on each reload.
+# Note that this flag does not apply to Postgres-backed installations.
+# Please review the Readme for directions on how to purge the
+# database when used in a server environment.
+purge_database_on_reload: false
+
+# Disable peer SSL verification for environments that use SSL inspection.
+disable_verify_peer: true
+
+# When running in a docker container, we have to listen to other than just
+# 'localhost' which is the default.
+bind: '0.0.0.0'
+
+# Omit TLS tests. Used for local development without TLS.
+disable_tls_tests: true
+
+# Default SMART scopes used when they are not defined by the testing module.
+default_scopes: launch user/*.read openid fhirUser offline_access
+
+# Logging enabled?
+logging_enabled: true
+
+# Log to file. Logs are written to `logs.log` if true.
+log_to_file: false
+
+# Log Level: unkown, fatal, error, warn, info, debug
+log_level: info
+
+# This text appears in a badge next to "Inferno" in the header of each page
+badge_text: PROGRAM EDITION
+
+# Resource validator options:
+# - "internal" uses the ruby validator from the fhir_models gem
+#   https://github.com/fhir-crucible/fhir_models
+# - "external" uses the a web interface for the L7 FHIR validator.
+#   https://github.com/inferno-community/fhir-validator-wrapper
+resource_validator: external
+
+# The url where the external validator can be reached. Ignored when using the
+# internal validator.
+external_resource_validator_url: http://validator_service:4567
+
+# The expected version of the external validator. The app will display a warning if
+# the found version doesn't match the expected version exactly.
+external_resource_validator_version: '1.2.0'
+
+# The list of testing modules which will be made available. These entries must
+# match the "name" field in the .yml files in lib/modules.
+modules:
+  - onc_program
+
+# Set this to true if access tokens are not required for bulk data.
+disable_bulk_data_require_access_token_test: false
+
+# JWKS which inferno will serve for bulk data interactions.
+bulk_data_jwks:
+  keys:
+    - kty: EC
+      crv: P-384
+      x: JQKTsV6PT5Szf4QtDA1qrs0EJ1pbimQmM2SKvzOlIAqlph3h1OHmZ2i7MXahIF2C
+      y: bRWWQRJBgDa6CTgwofYrHjVGcO-A7WNEnu4oJA5OUJPPPpczgx1g2NsfinK-D2Rw
+      key_ops:
+        - verify
+      ext: true
+      kid: 4b49a739d1eb115b3225f4cf9beb6d1b
+      alg: ES384
+    - kty: EC
+      crv: P-384
+      d: kDkn55p7gryKk2tj6z2ij7ExUnhi0ngxXosvqa73y7epwgthFqaJwApmiXXU2yhK
+      x: JQKTsV6PT5Szf4QtDA1qrs0EJ1pbimQmM2SKvzOlIAqlph3h1OHmZ2i7MXahIF2C
+      y: bRWWQRJBgDa6CTgwofYrHjVGcO-A7WNEnu4oJA5OUJPPPpczgx1g2NsfinK-D2Rw
+      key_ops:
+        - sign
+      ext: true
+      kid: 4b49a739d1eb115b3225f4cf9beb6d1b
+      alg: ES384
+    - kty: RSA
+      alg: RS384
+      n: vjbIzTqiY8K8zApeNng5ekNNIxJfXAue9BjoMrZ9Qy9m7yIA-tf6muEupEXWhq70tC7vIGLqJJ4O8m7yiH8H2qklX2mCAMg3xG3nbykY2X7JXtW9P8VIdG0sAMt5aZQnUGCgSS3n0qaooGn2LUlTGIR88Qi-4Nrao9_3Ki3UCiICeCiAE224jGCg0OlQU6qj2gEB3o-DWJFlG_dz1y-Mxo5ivaeM0vWuodjDrp-aiabJcSF_dx26sdC9dZdBKXFDq0t19I9S9AyGpGDJwzGRtWHY6LsskNHLvo8Zb5AsJ9eRZKpnh30SYBZI9WHtzU85M9WQqdScR69Vyp-6Uhfbvw
+      e: AQAB
+      key_ops:
+        - verify
+      ext: true
+      kid: b41528b6f37a9500edb8a905a595bdd7
+    - kty: RSA
+      alg: RS384
+      n: vjbIzTqiY8K8zApeNng5ekNNIxJfXAue9BjoMrZ9Qy9m7yIA-tf6muEupEXWhq70tC7vIGLqJJ4O8m7yiH8H2qklX2mCAMg3xG3nbykY2X7JXtW9P8VIdG0sAMt5aZQnUGCgSS3n0qaooGn2LUlTGIR88Qi-4Nrao9_3Ki3UCiICeCiAE224jGCg0OlQU6qj2gEB3o-DWJFlG_dz1y-Mxo5ivaeM0vWuodjDrp-aiabJcSF_dx26sdC9dZdBKXFDq0t19I9S9AyGpGDJwzGRtWHY6LsskNHLvo8Zb5AsJ9eRZKpnh30SYBZI9WHtzU85M9WQqdScR69Vyp-6Uhfbvw
+      e: AQAB
+      d: rriV9GYimi5by7TOW4xNh6_gYBHVRDBsft2OFF8qapdVHt2GNuRDDxc_B6ga6TY2Enh2MLKLTr1dD3W4FIdTCJiMerrorp07FJS7nJEMgWQDxrfgkX4_EqrhW42L5d4vypYnRXEEW6u4gzkx5uFOkdvJBIK7CsIdSaBFYhochnynNgvbKWasi4rl2hayEH8tdf3B7Z6OIH9alspBTaq3j_zJt_KkrpYEzIUb4UgALB5NTWn5YKr0Avk_asOg8YfjViQwO9ASGaWjQeJ2Rx8OEQwBMQHSDMCSWNiWmYOu9PcwSZFc1vLxqzyIM8QrQSJHCCMo_wGYgke_r0CLeONHEQ
+      p: 5hH_QApWGeobRi1n7XbMfJYohB8K3JDPa0MspfplHpJ-17JiGG2sNoBdBcpaPRf9OX48P8VqO0qrSSRAk-I-uO6OO9BHbIukXJILqnY2JmurYzbcYbt5FVbknlHRJojkF6-7sFBazpueUlOnXCw7X7Z_SkfNE4QX5Ejm2Zm5mek
+      q: 06bZz7c7K9s1-aEZsxYnLJ9eTpKlt1tIBDA_LwIh5W3w259pes2kUtimbnkyOf-V2ZIERsFCh5s-S9IOEMvAIa6M5j9GW1ILNT7AcHIUfcyFcH-FF8BU_KJdRP5PXnIXFdYcylvsdoIdchy1AaUIzyiKRCU3HBYI75hez0l_F2c
+      dp: h_sVIXW6hCCRND48EedIX06k7conMkxIu_39ErDXOWWeoMAnKIcR5TijQnviL__QxD1vQMXezuKIMHfDz2RGbClbWdD1lhtG7wvG515tDPJQXxia0wzqOQmdoFF9S8hXAAT26vPjaAAkaEZXQaxG_4Au5elgNWu6b0wDXZN1Vpk
+      dq: GqS0YpuUTU8JGmWXUJ4HTGy7eHSpe8134V8ZdRd1oOYYHe2RX64nc25mdR24nuh3uq3Q7_9AGsYGL5E_yAl-JD9O6WUpvDE1y_wcSYty3Os0GRdUb8r8Z9kgmKDS6Pa_xTXw5eBwgfKbNlQ6zPwzgbB-x1lP-K8lbNPni3ybDR0
+      qi: cqQfoi0sM5Su8ZOhznmdWrDIQB28H6fBKiabgaIKkbWZV4e0nwFvLquHjPOvv4Ao8iEGU5dyhvg0n5BKYPi-4mp6M6OA1sy0NrTr7EsKSYGyu2pBq9rw4oAYTM2LXKg6K-awgUUlkc451IwxHBAe15PWCBM3kvLQeijNid0Vz5I
+      key_ops:
+        - sign
+      ext: true
+      kid: b41528b6f37a9500edb8a905a595bdd7
+
+    
+# Optional preset server testing configurations.
+#
+# Universal Settings:
+# - name: REQUIRED. Name to be displayed in the preset selection menu.
+# - uri: REQUIRED. FHIR server base uri.
+# - module: REQUIRED. Name of testing module for this server.
+# - inferno_uri: OPTIONAL When this value is present, the preset will only be
+#   listed when inferno is being served from this uri. This allows separate
+#   SMART credentials to be used depending on where inferno is hosted. Omit this
+#   value to always display this preset.
+#
+# Single Patient API Settings (OPTIONAL):
+# - confidential_client: "true" for confidential clients, "false" for public
+#   clients. Used for SMART tests
+# - client_id: SMART client ID.
+# - client_secret: SMART client secret. Only used for confidential clients.
+# - instructions: Link to instructions for using this server.
+#
+# Multi Patient API Settings (OPTIONAL):
+# - bulk_url: Multi patient FHIR server base url.
+# - bulk_requires_auth: Whether the server requires SMART backend servics
+#   authorization. "true" or "false"
+# - bulk_token_endpoint: Token endpoint for SMART backend services
+#   authorization.
+# - bulk_client_id: Client ID for SMART backend services authorization.
+# - bulk_public_key: Public key for SMART backend services authorization.
+# - bulk_private_key: Private key for SMART backend services authorization.
+# - bulk_fastest_resource: A FHIR resource type accessible through the patient
+#   and group level exports that the server can export quickly.
+# - bulk_system_export_endpoint: Relative path to system export endpoint from
+#   'bulk_url'.
+# - bulk_patient_export_endpoint: Relative path to patient export endpoint from
+#   'bulk_url'.
+# - bulk_group_export_endpoint: Relative path to group export endpoint from
+#   'bulk_url'.
+# - bulk_scope: The SMART scopes which will be requested for bulk data.
+# - group_id: Group id that will be used for group level export.
+presets:
+  localhost_reference_server:
+    inferno_uri: http://localhost:4567
+    name: Inferno Reference Server
+    uri: https://inferno.healthit.gov/reference-server/r4
+    module: onc_program
+    client_id: SAMPLE_CONFIDENTIAL_CLIENT_ID
+    confidential_client: true
+    client_secret: SAMPLE_CONFIDENTIAL_CLIENT_SECRET
+    onc_sl_url: https://inferno.healthit.gov/reference-server/r4
+    onc_sl_client_id: SAMPLE_CONFIDENTIAL_CLIENT_ID
+    onc_sl_confidential_client: true
+    onc_sl_client_secret: SAMPLE_CONFIDENTIAL_CLIENT_SECRET
+    onc_public_client_id: SAMPLE_PUBLIC_CLIENT_ID
+    scopes: 'launch openid fhirUser offline_access user/Medication.read user/AllergyIntolerance.read user/CarePlan.read user/CareTeam.read user/Condition.read user/Device.read user/DiagnosticReport.read user/DocumentReference.read user/Encounter.read user/Goal.read user/Immunization.read user/Location.read user/MedicationRequest.read user/Observation.read user/Organization.read user/Patient.read user/Practitioner.read user/Procedure.read user/Provenance.read user/PractitionerRole.read'
+    onc_sl_scopes: 'launch/patient openid fhirUser offline_access patient/Medication.read patient/AllergyIntolerance.read patient/CarePlan.read patient/CareTeam.read patient/Condition.read patient/Device.read patient/DiagnosticReport.read patient/DocumentReference.read patient/Encounter.read patient/Goal.read patient/Immunization.read patient/Location.read patient/MedicationRequest.read patient/Observation.read patient/Organization.read patient/Patient.read patient/Practitioner.read patient/Procedure.read patient/Provenance.read patient/PractitionerRole.read'
+    patient_ids: '85,355'
+    token: 'SAMPLE_TOKEN'
+    bulk_url:  https://inferno.healthit.gov/bulk-data-server/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1Ijo0fQ/fhir
+    bulk_token_endpoint: https://inferno.healthit.gov/bulk-data-server/auth/token
+    bulk_client_id: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InJlZ2lzdHJhdGlvbi10b2tlbiJ9.eyJqd2tzX3VybCI6Imh0dHBzOi8vaW5mZXJuby5oZWFsdGhpdC5nb3YvaW5mZXJuby8ud2VsbC1rbm93bi9qd2tzLmpzb24iLCJhY2Nlc3NUb2tlbnNFeHBpcmVJbiI6MTUsImlhdCI6MTU5OTE1NzgyMX0.-wulnE05BlY_Zcm5iP77Meqxr6iNiYxBsOADB5CGE8I
+    bulk_scope: system/*.read
+    group_id: 1

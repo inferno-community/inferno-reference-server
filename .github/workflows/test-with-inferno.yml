@@ -1,0 +1,22 @@
+name: Test With Inferno
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run Inferno Program tests on Reference Server
+      run:  docker-compose -f ./.github/inferno/docker-compose.yml run -T inferno_program ./wait-for-it.sh -t 0 reference_server:8080 -- bundle exec rake db:create db:migrate inferno:execute[http://reference_server:8080/reference-server/r4,onc_program,UsCoreR4CapabilityStatement,USCore311Patient,USCore311Allergyintolerance,USCore311Careplan,USCore311Careteam,USCore311Condition,USCore311ImplantableDevice,USCore311DiagnosticreportNote,USCore311DiagnosticreportLab,USCore311Documentreference,USCore311Goal,USCore311Immunization,USCore311Medicationrequest,USCore311Smokingstatus,USCore311PediatricWeightForHeight,USCore311ObservationLab,USCore311PediatricBmiForAge,USCore311PulseOximetry,USCore311HeadOccipitalFrontalCircumferencePercentile,USCore311Bodyheight,USCore311Bodytemp,USCore311Bp,USCore311Bodyweight,USCore311Heartrate,USCore311Resprate,USCore311Procedure,USCoreR4ClinicalNotes,USCore311Encounter,USCore311Location,USCore311Organization,USCore311Practitioner,USCore311Practitionerrole,USCore311Provenance,USCoreR4DataAbsentReason] --  --TOKEN SAMPLE_TOKEN --PATIENT_IDS 85,355 --DEVICE_CODES ""

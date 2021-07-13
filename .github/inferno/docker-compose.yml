@@ -1,0 +1,39 @@
+version: '3'
+services:
+  inferno_program:
+    image: onchealthit/inferno-program:release-latest
+    volumes:
+      - ./config.yml:/var/www/inferno/config.yml
+      - ./wait-for-it/wait-for-it.sh:/var/www/inferno/wait-for-it.sh
+    depends_on:
+      - validator_service
+      - reference_server
+    ports:
+      - '4567:4567'
+
+  validator_service:
+    image: infernocommunity/fhir-validator-service:v1.2.0
+  db:    
+    build:
+      context: ../../
+      dockerfile: Dockerfile.database
+    ports:
+      - '5432:5432'
+    volumes:
+      - fhir-pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+  reference_server:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      - POSTGRES_HOST=db
+      - CUSTOM_BEARER_TOKEN=SAMPLE_TOKEN
+    depends_on:
+      - db  
+  
+volumes:
+  fhir-pgdata:
