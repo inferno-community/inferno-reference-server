@@ -110,7 +110,7 @@ public class AuthorizationController {
     JSONObject header = new JSONObject(headerString);
     JSONObject payload = new JSONObject(payloadString);
 
-    //validate scopes
+    // validate scopes
     validateBulkDataScopes(scopeString);
 
     // check grant_type
@@ -119,21 +119,21 @@ public class AuthorizationController {
           "Grant Type should be " + BULK_EXPECTED_GRANT_TYPE);
     }
 
-    //check client_assertion_type
+    // check client_assertion_type
     if (!BULK_EXPECTED_CLIENT_ASSERTION_TYPE.equals(clientAssertionType)) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "Client Assertion Type should be " + BULK_EXPECTED_CLIENT_ASSERTION_TYPE);
     }
-    
-    //validate client_assertion (jwt)
+
+    // validate client_assertion (jwt)
     DecodedJWT decodedJWT = JWT.decode(clientAssertion);
 
-    String clientId = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InJlZ2lzdHJhdGlvbi10b2tlbiJ9.eyJqd2tzX3VybCI6Imh0dHA6Ly8xMC4xNS4yNTIuNzMvaW5mZXJuby8ud2VsbC1rbm93bi9qd2tzLmpzb24iLCJhY2Nlc3NUb2tlbnNFeHBpcmVJbiI6MTUsImlhdCI6MTU5NzQxMzE5NX0.q4v4Msc74kN506KTZ0q_minyapJw0gwlT6M_uiL73S4";
-    if (!clientId.equals(decodedJWT.getIssuer()))
-    {
+    String clientId =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InJlZ2lzdHJhdGlvbi10b2tlbiJ9.eyJqd2tzX3VybCI6Imh0dHA6Ly8xMC4xNS4yNTIuNzMvaW5mZXJuby8ud2VsbC1rbm93bi9qd2tzLmpzb24iLCJhY2Nlc3NUb2tlbnNFeHBpcmVJbiI6MTUsImlhdCI6MTU5NzQxMzE5NX0.q4v4Msc74kN506KTZ0q_minyapJw0gwlT6M_uiL73S4";
+    if (!clientId.equals(decodedJWT.getIssuer())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "Issuer should be " + BULK_EXPECTED_CLIENT_ASSERTION_TYPE);
- 
+
     }
 
     TokenManager tokenManager = TokenManager.getInstance();
@@ -157,6 +157,8 @@ public class AuthorizationController {
     return responseEntity;
 
   }
+  
+
 
   private void validateBulkDataScopes(String scopesString) {
     List<String> scopes = FhirReferenceServerUtils.getScopesListByScopeString(scopesString);

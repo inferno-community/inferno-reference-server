@@ -24,7 +24,7 @@ public class FakeOauth2AuthorizationInterceptorAdaptor extends InterceptorAdapte
     // exempt the capability statement from requiring the token
     if (CONFORMANCE_PATH.equals(request.getPathInfo())) {
       return true;
-    }
+    }    
 
     List<String> scopesArray;
     TokenManager tokenManager = TokenManager.getInstance();
@@ -36,7 +36,7 @@ public class FakeOauth2AuthorizationInterceptorAdaptor extends InterceptorAdapte
     }
 
     bearerToken = bearerToken.replaceFirst(BEARER_TOKEN_PREFIX, "");
-
+        
     try {
 
       tokenManager.authenticateBearerToken(bearerToken);

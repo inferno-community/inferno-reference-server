@@ -433,6 +433,21 @@
           ]
         },
         {
+          "type": "Group",
+          "operation": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/capabilitystatement-expectation",
+                  "valueCode": "SHOULD"
+                }
+              ],
+              "name": "group-export",
+              "definition": "http://hl7.org/fhir/uv/bulkdata/OperationDefinition/group-export"
+            }
+          ]
+        },        
+        {
           "type": "Immunization",
           "supportedProfile": [
             "http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization"
@@ -715,6 +730,7 @@
               "type": "string"
             }
           ]
+        	
         },
         {
           "type": "Practitioner",
@@ -744,7 +760,22 @@
               "name": "identifier",
               "type": "token"
             }
+          ],
+          
+          "operation": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/capabilitystatement-expectation",
+                  "valueCode": "SHOULD"
+                }
+              ],
+              "name": "patient-export",
+              "definition": "http://hl7.org/fhir/uv/bulkdata/OperationDefinition/patient-export"
+            }
           ]
+
+          
         },
         {
           "type": "PractitionerRole",
@@ -838,7 +869,24 @@
             }
           ]
         }
+      ],    
+      "operation": [
+        {
+          "name": "get-resource-counts",
+          "definition": "OperationDefinition/-s-get-resource-counts"
+        },
+        {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/capabilitystatement-expectation",
+              "valueCode": "SHOULD"
+            }
+          ],
+          "name": "export",
+          "definition": "http://hl7.org/fhir/uv/bulkdata/OperationDefinition/export"
+        }
       ]
+    
     }
   ]
 }

@@ -21,6 +21,7 @@ import org.hibernate.search.backend.lucene.cfg.LuceneBackendSettings;
 import org.hibernate.search.backend.lucene.cfg.LuceneIndexSettings;
 import org.hibernate.search.engine.cfg.BackendSettings;
 import org.hibernate.search.mapper.orm.cfg.HibernateOrmMapperSettings;
+import org.mitre.fhir.bulk.AuthorizationBulkDataExportProvider;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -189,7 +190,7 @@ public class MitreServerConfig extends BaseJavaConfigR4 {
   
   @Bean
   public BulkDataExportProvider bulkDataExportProvider() {
-    return new BulkDataExportProvider();
+    return new AuthorizationBulkDataExportProvider();
   }
 
 }
