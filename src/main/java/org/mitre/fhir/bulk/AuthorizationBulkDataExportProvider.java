@@ -3,7 +3,6 @@ package org.mitre.fhir.bulk;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.bulk.export.api.IBulkDataExportSvc;
 import ca.uhn.fhir.jpa.bulk.export.model.BulkExportResponseJson;
-import ca.uhn.fhir.jpa.bulk.export.model.BulkExportResponseJson.Output;
 import ca.uhn.fhir.jpa.bulk.export.provider.BulkDataExportProvider;
 import ca.uhn.fhir.jpa.model.util.JpaConstants;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -162,10 +161,12 @@ public class AuthorizationBulkDataExportProvider extends BulkDataExportProvider 
               serverBase + "/" + nextFile.getResourceId().toUnqualifiedVersionless().getValue();
           bulkResponseDocument.addOutput().setType(nextFile.getResourceType()).setUrl(nextUrl);
         }
-        
-        //UGLY FIX: call the getter which will make output an empty array instead of null for purposes of writing to json
-        bulkResponseDocument.getOutput() ;
-                
+
+        // UGLY FIX: call the getter which will make output an empty array instead of null for
+        // purposes of writing to json
+        bulkResponseDocument.getOutput();
+        bulkResponseDocument.getError();
+
         JsonUtil.serialize(bulkResponseDocument, response.getWriter());
         response.getWriter().close();
         break;
